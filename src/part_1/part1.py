@@ -112,7 +112,7 @@ def main():
     test_final.to_csv("output/test_processed.csv", index=False)
 
     # Save scaler
-    with open("scaler.pkl", "wb") as f:
+    with open("part_1/scaler.pkl", "wb") as f:
         pickle.dump(scaler, f)
 
     print("Saved files:")
