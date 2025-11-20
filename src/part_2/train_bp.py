@@ -1,7 +1,11 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from neural_net import NeuralNet
+
+try:
+    from .neural_net import NeuralNet
+except ImportError:
+    from neural_net import NeuralNet
 
 class TrainBP:
     """Class to handle training of a neural network using backpropagation and handle data loading"""
@@ -83,7 +87,7 @@ class TrainBP:
         return y_pred, y_true
 
 
-    def train(self, train_path, val_path, test_path, target):
+    def train(self, train_path, val_path, test_path, target, verbose=False):
         # Load data
         X_train, y_train, pid_train, X_val, y_val, pid_val, X_test, y_test, pid_test = \
             self.load_data(train_path, val_path, test_path, target)
@@ -121,13 +125,14 @@ class TrainBP:
         
         # Training and validation error per epoch
         train, val = self.nn.loss_epochs()
-        df = pd.DataFrame({
-            "Epoch": train[:,1].astype(int),
-            "Train Error": train[:,0],
-            "Val Error": val[:,0] if val is not None else np.nan
-        })
-        pd.set_option("display.max_rows", None)
-        print(df)
+        if verbose:
+            df = pd.DataFrame({
+                "Epoch": train[:,1].astype(int),
+                "Train Error": train[:,0],
+                "Val Error": val[:,0] if val is not None else np.nan
+            })
+            pd.set_option("display.max_rows", None)
+            print(df)
 
         # Quadratic error
         test_error = 0.5 * np.mean((y_test_scaled - preds_test)**2)

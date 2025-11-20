@@ -1,6 +1,12 @@
-from train_bp import TrainBP
-import numpy as np
-import pickle
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+
+try:
+    from .train_bp import TrainBP
+except ImportError:
+    from train_bp import TrainBP
 
 TARGET = "SalePrice"
 
@@ -65,20 +71,33 @@ def train_relu():
     )
     return trainer
 
-def run_training(trainer):
+def run_training(activation: str, verbose: bool = False):
+    if activation == "linear":
+        trainer = train_linear()
+    elif activation == "sigmoid":
+        trainer = train_sigmoid()
+    elif activation == "tanh":
+        trainer = train_tanh()
+    elif activation == "relu":
+        trainer = train_relu()
+    else:
+        raise ValueError(f"Unknown activation function: {activation}")
     nn, pid_test, y_test, preds_test, test_error = trainer.train(
         CSV_TRAIN,
         CSV_VAL,
         CSV_TEST,
-        TARGET
+        TARGET,
+        verbose=verbose
     )
+    # Just for checking results
+    if verbose:
+        for pid_val, real, pred in zip(pid_test, y_test, preds_test):
+            print(f"PID {pid_val} - Real: {real:.2f}, Predicted: {pred:.2f}")
 
-    for pid_val, real, pred in zip(pid_test, y_test, preds_test):
-        print(f"PID {pid_val} - Real: {real:.2f}, Predicted: {pred:.2f}")
+    return nn, pid_test, y_test, preds_test, trainer
 
 def main():
-    trainer = train_linear()
-    run_training(trainer)
+    run_training("linear")
 
 
 if __name__ == "__main__":
