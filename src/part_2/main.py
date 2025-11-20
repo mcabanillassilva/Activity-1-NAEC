@@ -4,16 +4,12 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
 try:
-    from .train_bp import TrainBP
+    from .train_housing_bp import TrainBP
 except ImportError:
-    from train_bp import TrainBP
+    from src.part_2.train_housing_bp import TrainBP
 
 TARGET = "SalePrice"
 
-CSV_TRAIN = "output/train_processed.csv"
-CSV_VAL = "output/val_processed.csv"
-CSV_TEST = "output/test_processed.csv"
-SCALER_Y_PATH = "src/part_1/scaler_y.pkl"
 
 def train_linear():
     layers = [277, 1]
@@ -25,9 +21,10 @@ def train_linear():
         activation="linear",
         val_percent=0.2,
         scale=True,
-        log_target=False
+        log_target=False,
     )
     return trainer
+
 
 def train_sigmoid():
     layers = [277, 20, 10, 1]
@@ -39,9 +36,10 @@ def train_sigmoid():
         activation="sigmoid",
         val_percent=0.2,
         scale=True,
-        log_target=True
+        log_target=True,
     )
     return trainer
+
 
 def train_tanh():
     layers = [277, 20, 10, 1]
@@ -53,9 +51,10 @@ def train_tanh():
         activation="tanh",
         val_percent=0.2,
         scale=True,
-        log_target=True
+        log_target=True,
     )
     return trainer
+
 
 def train_relu():
     layers = [277, 64, 32, 1]
@@ -67,11 +66,18 @@ def train_relu():
         activation="relu",
         val_percent=0.2,
         scale=True,
-        log_target=False
+        log_target=False,
     )
     return trainer
 
-def run_training(activation: str, verbose: bool = False):
+
+def run_training(
+    activation: str,
+    verbose: bool = False,
+    CSV_TRAIN: str = None,
+    CSV_VAL: str = None,
+    CSV_TEST: str = None,
+):
     if activation == "linear":
         trainer = train_linear()
     elif activation == "sigmoid":
@@ -83,11 +89,7 @@ def run_training(activation: str, verbose: bool = False):
     else:
         raise ValueError(f"Unknown activation function: {activation}")
     nn, pid_test, y_test, preds_test, test_error = trainer.train(
-        CSV_TRAIN,
-        CSV_VAL,
-        CSV_TEST,
-        TARGET,
-        verbose=verbose
+        CSV_TRAIN, CSV_VAL, CSV_TEST, TARGET, verbose=verbose
     )
     # Just for checking results
     if verbose:
@@ -96,10 +98,15 @@ def run_training(activation: str, verbose: bool = False):
 
     return nn, pid_test, y_test, preds_test, trainer
 
+
 def main():
-    run_training("linear")
+    CSV_TRAIN = "output/train_processed.csv"
+    CSV_VAL = "output/val_processed.csv"
+    CSV_TEST = "output/test_processed.csv"
+    run_training(
+        "linear", verbose=True, CSV_TRAIN=CSV_TRAIN, CSV_VAL=CSV_VAL, CSV_TEST=CSV_TEST
+    )
 
 
 if __name__ == "__main__":
     main()
-
