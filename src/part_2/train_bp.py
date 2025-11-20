@@ -118,14 +118,15 @@ class TrainBP:
 
         # Predict
         preds_test = self.nn.predict(X_test)
+        
+        # Training and validation error per epoch
         train, val = self.nn.loss_epochs()
-
         df = pd.DataFrame({
             "Epoch": train[:,1].astype(int),
             "Train Error": train[:,0],
             "Val Error": val[:,0] if val is not None else np.nan
         })
-        
+        pd.set_option("display.max_rows", None)
         print(df)
 
         # Quadratic error

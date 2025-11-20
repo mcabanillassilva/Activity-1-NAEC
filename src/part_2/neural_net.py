@@ -99,6 +99,7 @@ class NeuralNet:
 
     def fit(self, X, y):
         """Train the network"""
+        print("Training Neural Network...")
         # Scale input features
         if self.scale:
             self.x_mean = X.mean(axis=0)
