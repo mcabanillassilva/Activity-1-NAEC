@@ -136,9 +136,6 @@ class NeuralNet:
                     val_error += 0.5 * np.sum((yi_sample.reshape(-1,1)-yi_hat)**2)
                 val_error /= len(X_val)
                 self.val_errors.append(val_error)
-                print(f"Epoch {epoch+1}/{self.epochs} - Train Error: {train_error:.5f} - Val Error: {val_error:.5f}")
-            else:
-                print(f"Epoch {epoch+1}/{self.epochs} - Train Error: {train_error:.5f}")
 
     def predict(self, X):
         if self.scale and self.x_mean is not None:
@@ -150,3 +147,22 @@ class NeuralNet:
             yi_hat = self.forward(xi_sample)
             preds.append(yi_hat.flatten())
         return np.array(preds)
+    
+    def loss_epochs(self):
+        np.set_printoptions(suppress=True)
+
+        epochs = np.arange(1, self.epochs + 1).reshape(-1,1)
+
+        train = np.zeros((self.epochs, 2))
+        train[:,0] = np.array(self.train_errors).astype(float)
+        train[:,1] = epochs[:,0].astype(float)
+
+        if len(self.val_errors) == self.epochs:
+            val = np.zeros((self.epochs, 2))
+            val[:,0] = np.array(self.val_errors).astype(float)
+            val[:,1] = epochs[:,0].astype(float)
+        else:
+            val = None
+
+        return train, val
+
