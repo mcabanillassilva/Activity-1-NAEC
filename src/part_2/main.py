@@ -76,9 +76,6 @@ def run_training(trainer):
     for pid_val, real, pred in zip(pid_test, y_test, preds_test):
         print(f"PID {pid_val} - Real: {real:.2f}, Predicted: {pred:.2f}")
 
-    print("Test quadratic error:", test_error)
-
-
 def main():
     trainer = train_linear()
     run_training(trainer)
