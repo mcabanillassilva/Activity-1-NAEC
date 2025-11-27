@@ -77,7 +77,16 @@ def run_training(
     CSV_TRAIN: str = None,
     CSV_VAL: str = None,
     CSV_TEST: str = None,
+    # --- Optional hyperparameters for override ---
+    layers: list = None,
+    epochs: int = None,
+    lr: float = None,
+    momentum: float = None,
+    val_percent: float = None,
+    scale: bool = None,
+    log_target: bool = None,
 ):
+    # 1. Load default trainer depending on activation
     if activation == "linear":
         trainer = train_linear()
     elif activation == "sigmoid":
@@ -88,10 +97,34 @@ def run_training(
         trainer = train_relu()
     else:
         raise ValueError(f"Unknown activation function: {activation}")
+
+    if layers is not None:
+        trainer.layers = layers
+
+    if epochs is not None:
+        trainer.epochs = epochs
+
+    if lr is not None:
+        trainer.lr = lr
+
+    if momentum is not None:
+        trainer.momentum = momentum
+
+    if val_percent is not None:
+        trainer.val_percent = val_percent
+
+    if scale is not None:
+        trainer.scale = scale
+
+    if log_target is not None:
+        trainer.log_target = log_target
+
+    # 2. Train the model
     nn, pid_test, y_test, preds_test, test_error = trainer.train(
         CSV_TRAIN, CSV_VAL, CSV_TEST, TARGET, verbose=verbose
     )
-    # Just for checking results
+
+    # 4. Optional verbose output
     if verbose:
         for pid_val, real, pred in zip(pid_test, y_test, preds_test):
             print(f"PID {pid_val} - Real: {real:.2f}, Predicted: {pred:.2f}")
