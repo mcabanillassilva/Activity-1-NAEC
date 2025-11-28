@@ -132,6 +132,11 @@ def run_training(
     return nn, pid_test, y_test, preds_test, trainer
 
 
+def loss_epochs(trainer: TrainBP):
+    """Return training and validation loss per epoch as a DataFrame"""
+    return trainer.loss_epochs()
+
+
 def main():
     CSV_TRAIN = "output/train_processed.csv"
     CSV_VAL = "output/val_processed.csv"
