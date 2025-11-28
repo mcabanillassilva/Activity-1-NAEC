@@ -21,6 +21,8 @@ class TrainBP:
         val_percent=0.2,
         scale=True,
         log_target=False,
+        l2_lambda=0.0,  # NEW: L2 regularization parameter
+        dropout_rate=0.0,  # NEW: Dropout rate
     ):
         self.layers = layers
         self.epochs = epochs
@@ -30,6 +32,8 @@ class TrainBP:
         self.val_percent = val_percent
         self.scale = scale  # scale inputs X
         self.log_target = log_target  # log-transform target
+        self.l2_lambda = l2_lambda
+        self.dropout_rate = dropout_rate
         self.nn = None
         self.scaler_X = None
         self.scaler_y = None
@@ -134,7 +138,7 @@ class TrainBP:
         X_train_full = np.concatenate([X_train, X_val], axis=0)
         y_train_full = np.concatenate([y_train_scaled, y_val_scaled], axis=0)
 
-        # Initialize and fit network
+        # Initialize and fit network with regularization
         self.nn = NeuralNet(
             self.layers,
             epochs=self.epochs,
@@ -143,6 +147,8 @@ class TrainBP:
             activation=self.activation,
             val_percent=self.val_percent,
             scale=False,  # already scaled manually
+            l2_lambda=self.l2_lambda,  # L2 regularization
+            dropout_rate=self.dropout_rate,  # Dropout
         )
         self.nn.fit(X_train_full, y_train_full)
 
